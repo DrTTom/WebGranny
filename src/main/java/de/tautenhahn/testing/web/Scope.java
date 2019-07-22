@@ -3,6 +3,11 @@ package de.tautenhahn.testing.web;
 import java.util.function.Predicate;
 
 
+/**
+ * Defines selection methods. TODO: replace predicates by properties
+ * 
+ * @author t.tautenhahn
+ */
 public interface Scope
 {
 
@@ -43,6 +48,9 @@ public interface Scope
    */
   Scope after(String marker, Predicate<Element>... filter);
 
+  /**
+   * Simulate pressing the enter key.
+   */
   void pressEnter();
 
 

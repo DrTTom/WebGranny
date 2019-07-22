@@ -18,7 +18,12 @@ public abstract class BasicSearchScope implements Scope
 
   final Element rootElement;
 
-
+  /**
+   * Creates immutable instance. Instance will become stale after page reload.
+   * 
+   * @param filters
+   * @param rootElement
+   */
   protected BasicSearchScope(List<Predicate<Element>> filters, Element rootElement)
   {
     this.filters = filters;
@@ -33,10 +38,16 @@ public abstract class BasicSearchScope implements Scope
     return findElement(allFilters);
   }
 
+  /**
+   * Return first element matching all filters.
+   * 
+   * @param allFilters
+   * @return null if no such element
+   */
   protected abstract Element findElement(List<Predicate<Element>> allFilters);
 
   /**
-   * Meaning clone(), but clone() is old and therefore uncool
+   * Similar to clone(), but may return value of other class.
    * 
    * @return lightweight instance.
    */

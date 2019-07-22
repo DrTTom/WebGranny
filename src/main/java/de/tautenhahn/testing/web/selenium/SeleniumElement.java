@@ -6,6 +6,11 @@ import org.openqa.selenium.WebElement;
 import de.tautenhahn.testing.web.Element;
 
 
+/**
+ * Element implementation based on Selenium
+ * 
+ * @author t.tautenhahn
+ */
 public class SeleniumElement implements Element
 {
 
