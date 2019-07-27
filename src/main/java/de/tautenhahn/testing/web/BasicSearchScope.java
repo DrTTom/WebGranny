@@ -3,7 +3,8 @@ package de.tautenhahn.testing.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
+
+import de.tautenhahn.testing.web.With.Property;
 
 
 /**
@@ -14,7 +15,7 @@ import java.util.function.Predicate;
 public abstract class BasicSearchScope implements Scope
 {
 
-  final List<Predicate<Element>> filters;
+  final List<Property> filters;
 
   final Element rootElement;
 
@@ -24,19 +25,31 @@ public abstract class BasicSearchScope implements Scope
    * @param filters
    * @param rootElement
    */
-  protected BasicSearchScope(List<Predicate<Element>> filters, Element rootElement)
+  protected BasicSearchScope(List<Property> filters, Element rootElement)
   {
     this.filters = filters;
     this.rootElement = rootElement;
   }
 
   @Override
-  public Element findElement(Predicate<Element>... filter)
+  public Element findElement(Property... filter)
   {
-    List<Predicate<Element>> allFilters = new ArrayList<>(filters);
-    Arrays.stream(filter).forEach(allFilters::add);
-    return findElement(allFilters);
+    return findElement(merge(filter));
   }
+
+  private Element findElement(List<Property> all)
+  {
+    return findElements(all, 2000).stream()
+                                  .sorted((a, b) -> 0)
+                                  .findFirst()
+                                  .orElseThrow(() -> new ElementNotFoundException(getUrl(), rootElement, all,
+                                                                                  rootElement.text()));
+  }
+
+  /**
+   * @return the current URL this scope belongs to
+   */
+  protected abstract String getUrl();
 
   /**
    * Return first element matching all filters.
@@ -44,7 +57,7 @@ public abstract class BasicSearchScope implements Scope
    * @param allFilters
    * @return null if no such element
    */
-  protected abstract Element findElement(List<Predicate<Element>> allFilters);
+  protected abstract List<Element> findElements(List<Property> allFilters, int timeout);
 
   /**
    * Similar to clone(), but may return value of other class.
@@ -54,12 +67,9 @@ public abstract class BasicSearchScope implements Scope
   protected abstract BasicSearchScope createSubscope();
 
   @Override
-  public Element findElement(String marker, Predicate<Element>... filter)
+  public Element findElement(String marker, Property... filter)
   {
-    List<Predicate<Element>> allFilters = new ArrayList<>(filters);
-    allFilters.add(With.marker(marker));
-    Arrays.stream(filter).forEach(allFilters::add);
-    return findElement(allFilters);
+    return findElement(merge(filter, With.description(marker)));
   }
 
   @Override
@@ -69,13 +79,16 @@ public abstract class BasicSearchScope implements Scope
   }
 
   @Override
-  public Scope after(String marker, Predicate<Element>... filter)
+  public Scope after(String marker, Property... filter)
   {
-    Element boundary = findElement(marker, filter);
-    BasicSearchScope result = createSubscope();
-    result.filters.add(e -> e.isSameLineAs(boundary) && e.isRightOf(boundary) || e.isBelow(boundary));
-    return result;
+    return null; // TODO: implement
   }
 
-
+  private List<Property> merge(Property[] a, Property... b)
+  {
+    List<Property> result = new ArrayList<>(filters);
+    result.addAll(Arrays.asList(a));
+    result.addAll(Arrays.asList(b));
+    return result;
+  }
 }

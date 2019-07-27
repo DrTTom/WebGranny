@@ -1,0 +1,10 @@
+{
+   "hubUrl": "none",
+   "currentBrowser": "FirefoxLocal",
+   "browsers": {
+      "FirefoxLocal": {
+         "driverPath": "/usr/local/bin/geckodriver",
+         "driverProp": "webdriver.gecko.driver"
+      }
+   }
+}

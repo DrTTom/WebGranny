@@ -1,6 +1,6 @@
 package de.tautenhahn.testing.web;
 
-import java.util.function.Predicate;
+import de.tautenhahn.testing.web.With.Property;
 
 
 /**
@@ -17,7 +17,7 @@ public interface Scope
    * @param filter Any requirement for the wanted element
    * @return selected element
    */
-  Element findElement(Predicate<Element>... filter);
+  Element findElement(Property... filter);
 
   /**
    * Returns element specified by marker String.
@@ -27,7 +27,7 @@ public interface Scope
    * @param filter any additional filters to recognize the single element by
    * @return selected element
    */
-  Element findElement(String marker, Predicate<Element>... filter);
+  Element findElement(String marker, Property... filter);
 
 
   /**
@@ -46,7 +46,7 @@ public interface Scope
    * @param filter any additional filters to recognize the single element by
    * @return fails test if undefined.
    */
-  Scope after(String marker, Predicate<Element>... filter);
+  Scope after(String marker, Property... filter);
 
   /**
    * Simulate pressing the enter key.

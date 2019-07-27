@@ -20,28 +20,35 @@ public final class With
    * @param name
    * @return filters elements of given tag name.
    */
-  public static Predicate<Element> tagName(String name)
+  public static Property tagName(String name)
   {
-    return e -> name.equals(e.getTagName()) || e.getTagName().matches(name);
+    return new Property("matching(e.tagname, '" + name + "')", null);
   }
 
-  // TODO: change types to Property!
-  public static Predicate<Element> marker(String marker)
+  /**
+   * @param marker Visible text, label text, help text, style class, tag name or whatever the user might
+   *          recognize the element by
+   * @return filters for elements recognizable by given marker text
+   */
+  public static Property description(String marker)
   {
-    return e -> e.isRecognizableBy(marker);
+    return new Property("describedAs(e, '" + marker + "')", null);
   }
-
 
   /**
    * Wraps all kinds of selection methods. For Selenium, java side element selection is not used.
    */
-  public class Property
+  public static class Property
   {
 
     String jsFilter;
 
     Predicate<Element> matches;
 
+    /**
+     * @param jsFilter simple expression fitting into "e=&gt;{return ...}"
+     * @param matches same in java, optional
+     */
     Property(String jsFilter, Predicate<Element> matches)
     {
       this.jsFilter = jsFilter;
@@ -52,7 +59,7 @@ public final class With
      * @param e
      * @return true if given element has this property.
      */
-    boolean matchesElement(Element e)
+    public boolean matchesElement(Element e)
     {
       return matches.test(e);
     }
@@ -60,7 +67,7 @@ public final class With
     /**
      * @return a java script statement (lambda) returning true if given element has this property.
      */
-    String getJsFilter()
+    public String getJsFilter()
     {
       return jsFilter;
     }

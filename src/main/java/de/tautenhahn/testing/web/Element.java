@@ -28,17 +28,14 @@ public interface Element
    */
   void type(String content);
 
+  /**
+   * @return the tag name (capitalized)
+   */
   String getTagName();
 
+  /**
+   * @return the readable text
+   */
   String text();
-
-  boolean isRecognizableBy(String marker);
-
-  boolean isSameLineAs(Element boundary);
-
-  boolean isBelow(Element boundary);
-
-  boolean isRightOf(Element boundary);
-
 
 }

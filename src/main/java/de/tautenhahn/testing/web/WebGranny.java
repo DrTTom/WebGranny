@@ -1,45 +1,34 @@
 package de.tautenhahn.testing.web;
 
-import java.util.Collections;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-
-import de.tautenhahn.testing.web.selenium.SeleniumScope;
-
-
-public class WebGranny
+/**
+ * Enables a test access to a web application like you would explain to your granny.
+ * 
+ * @author t.tautenhahn
+ */
+public interface WebGranny
 {
 
-  private final WebDriver driver;
-
   /**
-   * Creates instance. TODO: Underlying driver should be defined by system properties.
+   * Points the browser to specified URL, blocks the current thread until page is loaded (be aware that some
+   * scripts may still run).
+   * 
+   * @param url to open
+   * @return this for fluent call
    */
-  public WebGranny()
-  {
-    System.setProperty("webdriver.gecko.driver", "/home/jean/bin/geckodriver");
-    driver = new FirefoxDriver();
-  }
-
-  public WebGranny openUrl(String url)
-  {
-    driver.get(url);
-    return this;
-  }
+  Scope openUrl(String url);
 
   /**
    * @return current URL as result of web site interactions.
    */
-  public String currentUrl()
-  {
-    return driver.getCurrentUrl();
-  }
+  String currentUrl();
 
-  public Scope currentPage()
-  {
-    return new SeleniumScope(Collections.EMPTY_LIST, driver.findElement(By.tagName("body")), driver);
-  }
+  /**
+   * @return the current page which might change as result of interactions
+   */
+  Scope currentPage();
 
+  /**
+   * Closes all resources like connections or browser windows.
+   */
+  void closeAll();
 }
