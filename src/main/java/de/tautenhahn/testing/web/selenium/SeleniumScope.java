@@ -3,17 +3,19 @@ package de.tautenhahn.testing.web.selenium;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import de.tautenhahn.testing.web.BasicSearchScope;
 import de.tautenhahn.testing.web.Element;
@@ -30,8 +32,6 @@ public class SeleniumScope extends BasicSearchScope
 
   private final WebDriver driver;
 
-  private final WebElement root;
-
   private static final String SCRIPT;
   static
   {
@@ -46,11 +46,10 @@ public class SeleniumScope extends BasicSearchScope
     }
   }
 
-  SeleniumScope(List<Property> filters, WebElement rootElement, WebDriver driver)
+  SeleniumScope(List<Property> filters, SeleniumElement root, WebDriver driver)
   {
-    super(filters, new SeleniumElement(rootElement));
+    super(filters, root);
     this.driver = driver;
-    this.root = rootElement;
   }
 
   /**
@@ -63,7 +62,7 @@ public class SeleniumScope extends BasicSearchScope
   @Override
   protected List<Element> findElements(List<Property> allFilters, int timeout)
   {
-    String rootSel = Optional.ofNullable(root.getAttribute("id"))
+    String rootSel = Optional.ofNullable(rootElement.getAttribute("id"))
                              .filter(i -> !i.isEmpty())
                              .map(i -> '#' + i)
                              .orElse("body");
@@ -71,16 +70,24 @@ public class SeleniumScope extends BasicSearchScope
     allFilters.forEach(f -> sb.append(".filter(e=>").append(f.getJsFilter()).append(')'));
     sb.append(".map(_desc_)");
     List<Map<String, Object>> list = getList(sb.toString(), System.currentTimeMillis() + timeout);
-
-    // TODO: wait, consider that the element might be invisible
-    return list.stream()
-               .map(m -> (String)m.get("id"))
-               .map(id -> root.findElement(By.id(id)))
-               .map(SeleniumElement::new)
-               .collect(Collectors.toList());
+    List<Element> result = new ArrayList<>(list.size());
+    WebDriverWait wait = new WebDriverWait(driver, 1);
+    for ( Map<String, Object> descr : list )
+    {
+      try
+      {
+        WebElement elem = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id((String)descr.get("id"))));
+        result.add(new SeleniumElement(elem, descr));
+      }
+      catch (org.openqa.selenium.TimeoutException e)
+      {
+        // TODO: handle
+      }
+    }
+    return result;
   }
 
-  private List<Map<String, Object>> getList(String script, Long deadline)
+  private List<Map<String, Object>> getList(String script, long deadline)
   {
     List<Map<String, Object>> list = (List)((JavascriptExecutor)driver).executeScript(script);
     while (list.isEmpty() && System.currentTimeMillis() < deadline)
@@ -99,10 +106,9 @@ public class SeleniumScope extends BasicSearchScope
   }
 
   @Override
-  protected BasicSearchScope createSubscope()
+  protected BasicSearchScope createSubscope(List<Property> filters, Element root)
   {
-    // TODO Auto-generated method stub
-    return null;
+    return new SeleniumScope(filters, (SeleniumElement)root, driver);
   }
 
   @Override
@@ -117,5 +123,4 @@ public class SeleniumScope extends BasicSearchScope
   {
     return driver.getCurrentUrl();
   }
-
 }

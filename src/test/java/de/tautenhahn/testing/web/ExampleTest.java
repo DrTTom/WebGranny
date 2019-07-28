@@ -47,7 +47,7 @@ public class ExampleTest
     Scope page = granny.currentPage();
 
     // short for "click your mouse in that field and then on the keyboard ... press Enter."
-    page.findElement("Suche").type("Computer für Senioren");
+    page.findElement("Suche").doType("Computer für Senioren");
     page.pressEnter();
 
     // TODO: sort out the wait;
@@ -58,13 +58,13 @@ public class ExampleTest
     assertThat(granny.currentUrl()).contains("amazon");
 
     // would be better to ask for an element "which is a header"
-    String found = page.findElement("Kunden, die diesen Artikel .*", With.tagName("h2")).text();
+    String found = page.findElement("Kunden, die diesen Artikel .*", With.tagName("h2")).getText();
     assertThat(found).endsWith("kauften auch");
     // granny.quit();
   }
 
   /**
-   * Selects some elements on a local example page.
+   * Selects some elements on a local example page. Assert that always the nearest matching element is found.
    * 
    * @throws IOException
    */
@@ -74,8 +74,13 @@ public class ExampleTest
     WebGranny granny = createGranny();
     Scope page = granny.openUrl("file://"
       + Paths.get("src", "test", "resources", "testPage.html").toAbsolutePath());
-    assertThat(page.findHeader("Example.*").text()).isEqualTo("Example page");
-    assertThat(page).isNotNull();
+
+    assertThat(page.findHeader("Example.*").getText()).isEqualTo("Example page");
+
+    assertThat(page.findElement("FINDME.*").getText()).isEqualTo("FINDME#1");
+    assertThat(page.in("A special container.*").findElement("FINDME.*").getText()).isEqualTo("FINDME#3");
+    // should revert search preference to last matching:
+    // assertThat(page.before("A special container").findElement("FINDME.*").getText()).isEqualTo("FINDME#2");
     granny.closeAll();
   }
 }

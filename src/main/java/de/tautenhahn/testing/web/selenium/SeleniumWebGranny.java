@@ -1,6 +1,7 @@
 package de.tautenhahn.testing.web.selenium;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -47,7 +48,9 @@ public class SeleniumWebGranny implements WebGranny
   @Override
   public Scope currentPage()
   {
-    return new SeleniumScope(Collections.emptyList(), driver.findElement(By.tagName("body")), driver);
+    Map<String, Object> coversAll = Map.of("top", 0, "bottom", 20_000, "left", 0, "right", 20_000);
+    return new SeleniumScope(Collections.emptyList(),
+                             new SeleniumElement(driver.findElement(By.tagName("body")), coversAll), driver);
   }
 
   @Override

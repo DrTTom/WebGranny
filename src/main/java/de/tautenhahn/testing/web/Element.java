@@ -26,7 +26,7 @@ public interface Element
    * 
    * @param content
    */
-  void type(String content);
+  void doType(String content);
 
   /**
    * @return the tag name (capitalized)
@@ -36,6 +36,10 @@ public interface Element
   /**
    * @return the readable text
    */
-  String text();
+  String getText();
+
+  BoundingRectangle getPosition();
+
+  String getId();
 
 }

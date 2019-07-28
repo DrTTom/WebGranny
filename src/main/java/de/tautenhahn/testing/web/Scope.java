@@ -48,6 +48,10 @@ public interface Scope
    */
   Scope after(String marker, Property... filter);
 
+  Scope before(String string, Property... filter);
+
+  Scope in(String string, Property... filter);
+
   /**
    * Simulate pressing the enter key.
    */
@@ -61,6 +65,8 @@ public interface Scope
    * @return header element
    */
   Element findHeader(String marker, Property... filter);
+
+
 
 
 }

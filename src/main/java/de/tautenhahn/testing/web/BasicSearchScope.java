@@ -17,7 +17,7 @@ public abstract class BasicSearchScope implements Scope
 
   final List<Property> filters;
 
-  final Element rootElement;
+  protected final Element rootElement;
 
   /**
    * Creates immutable instance. Instance will become stale after page reload.
@@ -49,7 +49,7 @@ public abstract class BasicSearchScope implements Scope
                                   .sorted((a, b) -> 0)
                                   .findFirst()
                                   .orElseThrow(() -> new ElementNotFoundException(getUrl(), rootElement, all,
-                                                                                  rootElement.text()));
+                                                                                  rootElement.getText()));
   }
 
   /**
@@ -68,9 +68,11 @@ public abstract class BasicSearchScope implements Scope
   /**
    * Similar to clone(), but may return value of other class.
    * 
+   * @param property
+   * @param newRoot
    * @return lightweight instance.
    */
-  protected abstract BasicSearchScope createSubscope();
+  protected abstract BasicSearchScope createSubscope(List<Property> filters, Element newRoot);
 
   @Override
   public Element findElement(String marker, Property... filter)
@@ -87,7 +89,10 @@ public abstract class BasicSearchScope implements Scope
   @Override
   public Scope after(String marker, Property... filter)
   {
-    return null; // TODO: implement
+    Element boundary = findElement(marker, filter);
+    List<Property> newFilters = new ArrayList<>(filters);
+    newFilters.add(new Property("true", null)); // TODO
+    return createSubscope(newFilters, rootElement);
   }
 
   private List<Property> merge(Property[] a, Property... b)
@@ -96,5 +101,20 @@ public abstract class BasicSearchScope implements Scope
     result.addAll(Arrays.asList(a));
     result.addAll(Arrays.asList(b));
     return result;
+  }
+
+  @Override
+  public Scope before(String marker, Property... filter)
+  {
+    Element boundary = findElement(marker, filter);
+    List<Property> newFilters = new ArrayList<>(filters);
+    newFilters.add(new Property("true", null)); // TODO
+    return createSubscope(newFilters, rootElement);
+  }
+
+  @Override
+  public Scope in(String marker, Property... filter)
+  {
+    return createSubscope(filters, findElement(marker, filter));
   }
 }
