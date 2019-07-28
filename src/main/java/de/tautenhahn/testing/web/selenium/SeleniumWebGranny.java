@@ -53,6 +53,6 @@ public class SeleniumWebGranny implements WebGranny
   @Override
   public void closeAll()
   {
-    driver.close();
+    driver.quit();
   }
 }

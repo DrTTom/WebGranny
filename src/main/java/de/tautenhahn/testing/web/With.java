@@ -22,17 +22,22 @@ public final class With
    */
   public static Property tagName(String name)
   {
-    return new Property("matching(e.tagname, '" + name + "')", null);
+    return new Property("matches(e.tagName, '" + name + "')", null);
   }
 
   /**
    * @param marker Visible text, label text, help text, style class, tag name or whatever the user might
-   *          recognize the element by
+   *               recognize the element by
    * @return filters for elements recognizable by given marker text
    */
   public static Property description(String marker)
   {
-    return new Property("describedAs(e, '" + marker + "')", null);
+    return new Property("describedAs(e, '" + toJsExpr(marker) + "')", null);
+  }
+
+  private static String toJsExpr(String input)
+  {
+    return input.replace("'", "\\'").replace(".*", "[^]*");
   }
 
   /**
@@ -47,7 +52,7 @@ public final class With
 
     /**
      * @param jsFilter simple expression fitting into "e=&gt;{return ...}"
-     * @param matches same in java, optional
+     * @param matches  same in java, optional
      */
     Property(String jsFilter, Predicate<Element> matches)
     {

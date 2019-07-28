@@ -53,7 +53,7 @@ public class ExampleTest
     // TODO: sort out the wait;
     Thread.sleep(1000);
     page = granny.currentPage();
-    page.after("Ungefähr .* Egebnisse .*").findLink(".* Die Anleitung in Bildern .*").click();
+    page.after("Ungefähr .* Ergebnisse .*").findLink(".* Die Anleitung in Bildern .*").click();
 
     assertThat(granny.currentUrl()).contains("amazon");
 
@@ -61,17 +61,6 @@ public class ExampleTest
     String found = page.findElement("Kunden, die diesen Artikel .*", With.tagName("h2")).text();
     assertThat(found).endsWith("kauften auch");
     // granny.quit();
-  }
-
-  /**
-   * In case IDE does not support JUnit 5.
-   * 
-   * @param args
-   * @throws IOException
-   */
-  public static void main(String[] args) throws IOException
-  {
-    new ExampleTest().findElements();
   }
 
   /**
@@ -84,7 +73,8 @@ public class ExampleTest
   {
     WebGranny granny = createGranny();
     Scope page = granny.openUrl("file://"
-                                + Paths.get("src", "test", "resources", "testPage.html").toAbsolutePath());
+      + Paths.get("src", "test", "resources", "testPage.html").toAbsolutePath());
+    assertThat(page.findHeader("Example.*").text()).isEqualTo("Example page");
     assertThat(page).isNotNull();
     granny.closeAll();
   }

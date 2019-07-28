@@ -23,7 +23,7 @@ public interface Scope
    * Returns element specified by marker String.
    * 
    * @param marker Visible text, text of a label for an element, help text, image source string, anything the
-   *          user may recognize an element by. Regular expressions supported.
+   *               user may recognize an element by. Regular expressions supported.
    * @param filter any additional filters to recognize the single element by
    * @return selected element
    */
@@ -42,7 +42,7 @@ public interface Scope
    * Returns a scope selecting only elements after specified element.
    * 
    * @param marker Visible text, text of a label for an element, help text, image source string, anything the
-   *          user may recognize an element by. Regular expressions supported.
+   *               user may recognize an element by. Regular expressions supported.
    * @param filter any additional filters to recognize the single element by
    * @return fails test if undefined.
    */
@@ -52,6 +52,15 @@ public interface Scope
    * Simulate pressing the enter key.
    */
   void pressEnter();
+
+  /**
+   * Same as {@link #findElement(String, Property...)} but selects only headers.
+   * 
+   * @param marker see above
+   * @param filter see above
+   * @return header element
+   */
+  Element findHeader(String marker, Property... filter);
 
 
 }

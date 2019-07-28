@@ -37,6 +37,12 @@ public abstract class BasicSearchScope implements Scope
     return findElement(merge(filter));
   }
 
+  @Override
+  public Element findHeader(String marker, Property... filter)
+  {
+    return findElement(merge(filter, With.description(marker), With.tagName("H[1-6]")));
+  }
+
   private Element findElement(List<Property> all)
   {
     return findElements(all, 2000).stream()
