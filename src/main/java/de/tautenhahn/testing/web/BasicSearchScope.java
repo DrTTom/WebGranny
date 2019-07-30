@@ -89,9 +89,9 @@ public abstract class BasicSearchScope implements Scope
   @Override
   public Scope after(String marker, Property... filter)
   {
-    Element boundary = findElement(marker, filter);
+    // Element boundary = findElement(marker, filter);
     List<Property> newFilters = new ArrayList<>(filters);
-    newFilters.add(new Property("true", null)); // TODO
+    // newFilters.add(new Property("true", null)); // TODO
     return createSubscope(newFilters, rootElement);
   }
 
@@ -106,9 +106,9 @@ public abstract class BasicSearchScope implements Scope
   @Override
   public Scope before(String marker, Property... filter)
   {
-    Element boundary = findElement(marker, filter);
+    // Element boundary = findElement(marker, filter);
     List<Property> newFilters = new ArrayList<>(filters);
-    newFilters.add(new Property("true", null)); // TODO
+    // newFilters.add(new Property("true", null)); // TODO
     return createSubscope(newFilters, rootElement);
   }
 

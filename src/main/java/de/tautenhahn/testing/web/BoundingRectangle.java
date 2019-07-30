@@ -1,6 +1,10 @@
 package de.tautenhahn.testing.web;
 
-
+/**
+ * Describes a rectangle a web element is displayed in.
+ * 
+ * @author t.tautenhahn
+ */
 public class BoundingRectangle
 {
 
@@ -12,6 +16,14 @@ public class BoundingRectangle
 
   private final int right;
 
+  /**
+   * Creates immutable instance.
+   * 
+   * @param top
+   * @param bottom
+   * @param left
+   * @param right
+   */
   public BoundingRectangle(int top, int bottom, int left, int right)
   {
     this.top = top;
@@ -20,26 +32,36 @@ public class BoundingRectangle
     this.right = right;
   }
 
+  /**
+   * @return value
+   */
   public int getTop()
   {
     return top;
   }
 
-
+  /**
+   * @return value
+   */
   public int getBottom()
   {
     return bottom;
   }
 
-
+  /**
+   * @return value
+   */
   public int getLeft()
   {
     return left;
   }
 
-
+  /**
+   * @return value
+   */
   public int getRight()
   {
     return right;
   }
+
 }

@@ -82,6 +82,7 @@ public class SeleniumScope extends BasicSearchScope
       catch (org.openqa.selenium.TimeoutException e)
       {
         // TODO: handle
+        return null;
       }
     }
     return result;
@@ -122,5 +123,13 @@ public class SeleniumScope extends BasicSearchScope
   protected String getUrl()
   {
     return driver.getCurrentUrl();
+  }
+
+  /**
+   * @return the Selenium object describing the current root element.
+   */
+  public WebElement getRootWebElement()
+  {
+    return ((SeleniumElement)rootElement).elem;
   }
 }

@@ -13,5 +13,5 @@ function _desc_(e) {
 function _id_(e){if(!e.id){e.id ='wg'+Math.random().toString(36).substr(2, 9)} return e.id}
 function sameLineAs(e, top, bottom) {r=_desc_(e); return top<=r.bottom && bottom>=r.top}
 function before(e, top, bottom, left, right) {r=_desc_(e); return top>r.bottom || bottom>=r.top && left>r.right}
-function after(e, top, bottom, left, right) {r=_desc_(e); return bottom<r.top || top top<=r.bottom && right<r.left}
+function after(e, top, bottom, left, right) {r=_desc_(e); return bottom<r.top || top<=r.bottom && right<r.left}
 

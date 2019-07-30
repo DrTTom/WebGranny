@@ -75,6 +75,4 @@ public class SeleniumElement implements Element
     return id;
   }
 
-
-
 }

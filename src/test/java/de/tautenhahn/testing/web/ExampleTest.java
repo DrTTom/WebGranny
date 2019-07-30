@@ -77,8 +77,10 @@ public class ExampleTest
 
     assertThat(page.findHeader("Example.*").getText()).isEqualTo("Example page");
 
+    page.findElement("Enter some text .*", With.tagName("INPUT")).doType("hello!");
     assertThat(page.findElement("FINDME.*").getText()).isEqualTo("FINDME#1");
     assertThat(page.in("A special container.*").findElement("FINDME.*").getText()).isEqualTo("FINDME#3");
+
     // should revert search preference to last matching:
     // assertThat(page.before("A special container").findElement("FINDME.*").getText()).isEqualTo("FINDME#2");
     granny.closeAll();

@@ -28,7 +28,18 @@ public interface WebGranny
   Scope currentPage();
 
   /**
+   * Same as {@link #currentPage()} but synchronizes browser and java test.
+   * 
+   * @param oldPage scope starting with old body element which can be used to recognize the old page by.
+   * @param timeout number of seconds to wait for a new page to start loading. The method should return as
+   *                soon as a new page is detected.
+   * @return new page if it has changed during wait, old page if it is still valid.
+   */
+  Scope getUpdatedPage(Scope oldPage, int timeout);
+
+  /**
    * Closes all resources like connections or browser windows.
    */
   void closeAll();
+
 }

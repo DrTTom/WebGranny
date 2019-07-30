@@ -38,8 +38,15 @@ public interface Element
    */
   String getText();
 
+  /**
+   * @return position this element is displayed at. If driver does not support that value, return an
+   *         estimation which allows sorting.
+   */
   BoundingRectangle getPosition();
 
+  /**
+   * @return id of element
+   */
   String getId();
 
 }

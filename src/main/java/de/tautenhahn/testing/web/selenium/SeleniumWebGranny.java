@@ -5,7 +5,10 @@ import java.util.Map;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import de.tautenhahn.testing.web.Scope;
 import de.tautenhahn.testing.web.WebGranny;
@@ -57,5 +60,21 @@ public class SeleniumWebGranny implements WebGranny
   public void closeAll()
   {
     driver.quit();
+  }
+
+  @Override
+  public Scope getUpdatedPage(Scope oldPage, int timeout)
+  {
+    if (oldPage instanceof SeleniumScope)
+    {
+      WebElement oldRoot = ((SeleniumScope)oldPage).getRootWebElement();
+      WebDriverWait wait = new WebDriverWait(driver, timeout);
+      if (wait.until(ExpectedConditions.stalenessOf(oldRoot)))
+      {
+        return currentPage();
+      }
+      return oldPage;
+    }
+    throw new IllegalArgumentException();
   }
 }

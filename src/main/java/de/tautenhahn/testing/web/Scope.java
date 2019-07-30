@@ -48,8 +48,22 @@ public interface Scope
    */
   Scope after(String marker, Property... filter);
 
+  /**
+   * Returns subscope ...
+   * 
+   * @param string
+   * @param filter
+   * @return
+   */
   Scope before(String string, Property... filter);
 
+  /**
+   * Returns subscope ...
+   * 
+   * @param string
+   * @param filter
+   * @return
+   */
   Scope in(String string, Property... filter);
 
   /**
