@@ -35,10 +35,52 @@ public final class With
     return new Property("describedAs(e, '" + toJsExpr(marker) + "')", null);
   }
 
+  /**
+   * @param element specifies a position
+   * @return filters elements which come after given one using line-wise sequence
+   */
+  public static Property locationAfter(Element element)
+  {
+    BoundingRectangle pos = element.getPosition();
+    return new Property(String.format("after(e, $d, $d, $d, d$)'",
+                                      pos.getTop(),
+                                      pos.getBottom(),
+                                      pos.getLeft(),
+                                      pos.getRight()),
+                        null);
+  }
+
+  /**
+   * @param element specifies a position
+   * @return filters elements which come before given one using line-wise sequence
+   */
+  public static Property locationBefore(Element element)
+  {
+    BoundingRectangle pos = element.getPosition();
+    return new Property(String.format("before(e, $d, $d, $d, d$)'",
+                                      pos.getTop(),
+                                      pos.getBottom(),
+                                      pos.getLeft(),
+                                      pos.getRight()),
+                        null);
+  }
+
+  /**
+   * @param element specifies a vertical range
+   * @return filters elements which have vertical range overlapping with given element
+   */
+  public static Property locationBeside(Element element)
+  {
+    BoundingRectangle pos = element.getPosition();
+    return new Property(String.format("locationBeside(e, $d, $d)'", pos.getTop(), pos.getBottom()), null);
+  }
+
+
   private static String toJsExpr(String input)
   {
     return input.replace("'", "\\'").replace(".*", "[^]*");
   }
+
 
   /**
    * Wraps all kinds of selection methods. For Selenium, java side element selection is not used.

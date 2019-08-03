@@ -18,10 +18,10 @@ public class ElementNotFoundException extends RuntimeException
   /**
    * Creates new instance.
    * 
-   * @param url address of the current page
+   * @param url         address of the current page
    * @param rootElement of search context
-   * @param all applied filters
-   * @param text page text
+   * @param all         applied filters
+   * @param text        page text
    */
   public ElementNotFoundException(String url, Element rootElement, List<Property> all, String text)
   {

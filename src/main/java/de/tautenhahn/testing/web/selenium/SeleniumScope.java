@@ -33,6 +33,7 @@ public class SeleniumScope extends BasicSearchScope
   private final WebDriver driver;
 
   private static final String SCRIPT;
+
   static
   {
     try (InputStream ins = SeleniumScope.class.getResourceAsStream("FindElement.js");

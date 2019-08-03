@@ -12,7 +12,7 @@ import de.tautenhahn.testing.web.With.Property;
  * 
  * @author jean
  */
-public class UpdatingSearchScope extends BasicSearchScope
+public class UpdatingSearchScope extends BasicSearchScope implements PageUpdateListener
 {
 
   BasicSearchScope page;
@@ -59,7 +59,8 @@ public class UpdatingSearchScope extends BasicSearchScope
   /**
    * TODO: create listener pattern to call this method with each click and enter!
    */
-  void expectPageUpdate()
+  @Override
+  public void pagePossiblyUpdated()
   {
     page = (BasicSearchScope)client.getUpdatedPage(page, 1);
   }

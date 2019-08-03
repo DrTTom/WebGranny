@@ -25,6 +25,11 @@ public class SeleniumWebGranny implements WebGranny
   private final WebDriver driver;
 
   /**
+   * used to adjust all the waits according to system speed.
+   */
+  public static final long WAIT_FACTOR = 100;
+
+  /**
    * Creates instance.
    * 
    * @param config specifies which driver to use.

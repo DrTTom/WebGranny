@@ -3,6 +3,7 @@ package de.tautenhahn.testing.web;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 import de.tautenhahn.testing.web.With.Property;
 
@@ -57,6 +58,12 @@ public abstract class BasicSearchScope implements Scope
    */
   protected abstract String getUrl();
 
+  @Override
+  public List<Element> listElements(Property... filter)
+  {
+    return findElements(merge(filter), 0);
+  }
+
   /**
    * Return first element matching all filters.
    * 
@@ -68,7 +75,7 @@ public abstract class BasicSearchScope implements Scope
   /**
    * Similar to clone(), but may return value of other class.
    * 
-   * @param property
+   * @param filters
    * @param newRoot
    * @return lightweight instance.
    */
@@ -81,19 +88,41 @@ public abstract class BasicSearchScope implements Scope
   }
 
   @Override
-  public Element findLink(String marker)
+  public Element findLink(String marker, Property... filter)
   {
-    return findElement(marker); // TODO Auto-generated method stub, filter for "looks like link"
+    return findElement(merge(filter, With.description(marker), With.tagName("A")));
   }
 
   @Override
   public Scope after(String marker, Property... filter)
   {
-    // Element boundary = findElement(marker, filter);
-    List<Property> newFilters = new ArrayList<>(filters);
-    // newFilters.add(new Property("true", null)); // TODO
-    return createSubscope(newFilters, rootElement);
+    return byBoundary(With::locationAfter, marker, filter);
   }
+
+  @Override
+  public Scope before(String marker, Property... filter)
+  {
+    return byBoundary(With::locationBefore, marker, filter);
+  }
+
+  @Override
+  public Scope inSameLineAs(String marker, Property... filter)
+  {
+    return byBoundary(With::locationBeside, marker, filter);
+  }
+
+  @Override
+  public Scope in(String marker, Property... filter)
+  {
+    return createSubscope(filters, findElement(marker, filter));
+  }
+
+  private Scope byBoundary(Function<Element, Property> prop, String marker, Property... filter)
+  {
+    Element boundary = findElement(marker, filter);
+    return createSubscope(merge(new Property[]{prop.apply(boundary)}), rootElement);
+  }
+
 
   private List<Property> merge(Property[] a, Property... b)
   {
@@ -103,18 +132,4 @@ public abstract class BasicSearchScope implements Scope
     return result;
   }
 
-  @Override
-  public Scope before(String marker, Property... filter)
-  {
-    // Element boundary = findElement(marker, filter);
-    List<Property> newFilters = new ArrayList<>(filters);
-    // newFilters.add(new Property("true", null)); // TODO
-    return createSubscope(newFilters, rootElement);
-  }
-
-  @Override
-  public Scope in(String marker, Property... filter)
-  {
-    return createSubscope(filters, findElement(marker, filter));
-  }
 }
