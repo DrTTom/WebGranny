@@ -1,6 +1,7 @@
 package de.tautenhahn.testing.web;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import de.tautenhahn.testing.web.With.Property;
 
@@ -45,7 +46,7 @@ public class UpdatingSearchScope extends BasicSearchScope implements PageUpdateL
   }
 
   @Override
-  protected List<Element> findElements(List<Property> allFilters, int timeout)
+  protected Stream<Element> findElements(List<Property> allFilters, int timeout)
   {
     return page.findElements(allFilters, timeout);
   }

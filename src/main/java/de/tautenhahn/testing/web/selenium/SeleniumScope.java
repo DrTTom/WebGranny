@@ -6,8 +6,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -61,7 +63,7 @@ public class SeleniumScope extends BasicSearchScope
    * inner logic.
    */
   @Override
-  protected List<Element> findElements(List<Property> allFilters, int timeout)
+  protected Stream<Element> findElements(List<Property> allFilters, int timeout)
   {
     String rootSel = Optional.ofNullable(rootElement.getAttribute("id"))
                              .filter(i -> !i.isEmpty())
@@ -72,25 +74,33 @@ public class SeleniumScope extends BasicSearchScope
     sb.append(".map(_desc_)");
     List<Map<String, Object>> list = getList(sb.toString(), System.currentTimeMillis() + timeout);
     List<Element> result = new ArrayList<>(list.size());
-    WebDriverWait wait = new WebDriverWait(driver, 1);
-    for ( Map<String, Object> descr : list )
+    WebDriverWait wait = timeout > 0 ? new WebDriverWait(driver, 1) : null;
+    return list.stream()
+               .filter(descr -> descr.get("top") != descr.get("bottom")
+                 || descr.get("left") != descr.get("right")) // might change one but not both to visibility
+               .map(descr -> fetchElement(descr, wait))
+               .filter(Objects::nonNull);
+  }
+
+  private Element fetchElement(Map<String, Object> descr, WebDriverWait wait)
+  {
+    By selector = By.id((String)descr.get("id"));
+    try
     {
-      try
-      {
-        WebElement elem = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id((String)descr.get("id"))));
-        result.add(new SeleniumElement(elem, descr));
-      }
-      catch (org.openqa.selenium.TimeoutException e)
-      {
-        // TODO: handle
-        return null;
-      }
+      WebElement elem = wait == null ? driver.findElement(selector)
+        : wait.until(ExpectedConditions.visibilityOfElementLocated(selector));
+      return elem.isDisplayed() ? new SeleniumElement(elem, descr) : null;
     }
-    return result;
+    catch (org.openqa.selenium.TimeoutException e)
+    {
+      return null;
+    }
   }
 
   private List<Map<String, Object>> getList(String script, long deadline)
   {
+    System.out.println("\n\n" + script);
+
     List<Map<String, Object>> list = (List)((JavascriptExecutor)driver).executeScript(script);
     while (list.isEmpty() && System.currentTimeMillis() < deadline)
     {

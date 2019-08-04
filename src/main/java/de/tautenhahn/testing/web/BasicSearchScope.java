@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.tautenhahn.testing.web.With.Property;
 
@@ -46,8 +48,7 @@ public abstract class BasicSearchScope implements Scope
 
   private Element findElement(List<Property> all)
   {
-    return findElements(all, 2000).stream()
-                                  .sorted((a, b) -> 0)
+    return findElements(all, 2000).sorted((a, b) -> 0)
                                   .findFirst()
                                   .orElseThrow(() -> new ElementNotFoundException(getUrl(), rootElement, all,
                                                                                   rootElement.getText()));
@@ -61,7 +62,7 @@ public abstract class BasicSearchScope implements Scope
   @Override
   public List<Element> listElements(Property... filter)
   {
-    return findElements(merge(filter), 0);
+    return findElements(merge(filter), 0).collect(Collectors.toList());
   }
 
   /**
@@ -70,7 +71,7 @@ public abstract class BasicSearchScope implements Scope
    * @param allFilters
    * @return null if no such element
    */
-  protected abstract List<Element> findElements(List<Property> allFilters, int timeout);
+  protected abstract Stream<Element> findElements(List<Property> allFilters, int timeout);
 
   /**
    * Similar to clone(), but may return value of other class.

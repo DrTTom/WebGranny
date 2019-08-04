@@ -42,7 +42,7 @@ public final class With
   public static Property locationAfter(Element element)
   {
     BoundingRectangle pos = element.getPosition();
-    return new Property(String.format("after(e, $d, $d, $d, d$)'",
+    return new Property(String.format("after(e, %d, %d, %d, %d)",
                                       pos.getTop(),
                                       pos.getBottom(),
                                       pos.getLeft(),
@@ -57,7 +57,7 @@ public final class With
   public static Property locationBefore(Element element)
   {
     BoundingRectangle pos = element.getPosition();
-    return new Property(String.format("before(e, $d, $d, $d, d$)'",
+    return new Property(String.format("before(e, %d, %d, %d, %d)",
                                       pos.getTop(),
                                       pos.getBottom(),
                                       pos.getLeft(),
@@ -72,7 +72,7 @@ public final class With
   public static Property locationBeside(Element element)
   {
     BoundingRectangle pos = element.getPosition();
-    return new Property(String.format("locationBeside(e, $d, $d)'", pos.getTop(), pos.getBottom()), null);
+    return new Property(String.format("locationBeside(e, %d, %d)", pos.getTop(), pos.getBottom()), null);
   }
 
 

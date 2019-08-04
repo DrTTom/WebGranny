@@ -39,7 +39,7 @@ public class ExampleTest
    * @throws InterruptedException
    */
   @Test
-  @Disabled("no own test infrastructure, do not disturb google with senseless searches")
+  @Disabled("this is just an example, do not disturb google with senseless searches")
   public void searchSomething() throws Exception
   {
     WebGranny granny = createGranny();
@@ -49,18 +49,15 @@ public class ExampleTest
     // short for "click your mouse in that field and then on the keyboard ... press Enter."
     page.findElement("Suche").doType("Computer für Senioren");
     page.pressEnter();
+    page = granny.getUpdatedPage(page, 1000);
 
-    // TODO: sort out the wait;
-    Thread.sleep(1000);
-    page = granny.currentPage();
-    page.after("Ungefähr .* Ergebnisse .*").findLink(".* Die Anleitung in Bildern .*").click();
+    page.after("Ungefähr .* Ergebnisse .*").findLink(".*Anleitung in Bildern.*").click();
+    page = granny.getUpdatedPage(page, 1000);
 
     assertThat(granny.currentUrl()).contains("amazon");
-
-    // would be better to ask for an element "which is a header"
-    String found = page.findElement("Kunden, die diesen Artikel .*", With.tagName("h2")).getText();
+    String found = page.findHeader("Kunden, die diesen Artikel .*").getText();
     assertThat(found).endsWith("kauften auch");
-    // granny.quit();
+    granny.closeAll();
   }
 
   /**
