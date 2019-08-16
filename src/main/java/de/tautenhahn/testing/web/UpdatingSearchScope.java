@@ -28,15 +28,23 @@ public class UpdatingSearchScope extends BasicSearchScope implements PageUpdateL
    */
   public UpdatingSearchScope(BasicSearchScope initialPage, WebGranny client)
   {
-    super(initialPage.filters, initialPage.rootElement);
+    super(initialPage.filters, initialPage.getRootElement());
+    listener = this;
     page = initialPage;
     this.client = client;
+  }
+
+  public UpdatingSearchScope(WebGranny client, String initialUrl)
+  {
+    this((BasicSearchScope)client.openUrl(initialUrl), client);
+
   }
 
   @Override
   public void pressEnter()
   {
     page.pressEnter();
+    pagePossiblyUpdated();
   }
 
   @Override
@@ -52,14 +60,13 @@ public class UpdatingSearchScope extends BasicSearchScope implements PageUpdateL
   }
 
   @Override
-  protected BasicSearchScope createSubscope(List<Property> filters, Element newRoot)
+  protected BasicSearchScope createSubscope(List<Property> filters,
+                                            Element newRoot,
+                                            PageUpdateListener listener)
   {
-    return page.createSubscope(filters, newRoot);
+    return page.createSubscope(filters, newRoot, listener);
   }
 
-  /**
-   * TODO: create listener pattern to call this method with each click and enter!
-   */
   @Override
   public void pagePossiblyUpdated()
   {

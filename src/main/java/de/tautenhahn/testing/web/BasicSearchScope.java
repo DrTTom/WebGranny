@@ -20,7 +20,9 @@ public abstract class BasicSearchScope implements Scope
 
   final List<Property> filters;
 
-  protected final Element rootElement;
+  private final Element rootElement;
+
+  protected PageUpdateListener listener;
 
   /**
    * Creates immutable instance. Instance will become stale after page reload.
@@ -48,10 +50,12 @@ public abstract class BasicSearchScope implements Scope
 
   private Element findElement(List<Property> all)
   {
-    return findElements(all, 2000).sorted((a, b) -> 0)
-                                  .findFirst()
-                                  .orElseThrow(() -> new ElementNotFoundException(getUrl(), rootElement, all,
-                                                                                  rootElement.getText()));
+    return findElements(all,
+                        2000).sorted((a, b) -> 0)
+                             .peek(e -> e.addListener(listener))
+                             .findFirst()
+                             .orElseThrow(() -> new ElementNotFoundException(getUrl(), getRootElement(), all,
+                                                                             getRootElement().getText()));
   }
 
   /**
@@ -62,7 +66,7 @@ public abstract class BasicSearchScope implements Scope
   @Override
   public List<Element> listElements(Property... filter)
   {
-    return findElements(merge(filter), 0).collect(Collectors.toList());
+    return findElements(merge(filter), 0).peek(e -> e.addListener(listener)).collect(Collectors.toList());
   }
 
   /**
@@ -80,7 +84,9 @@ public abstract class BasicSearchScope implements Scope
    * @param newRoot
    * @return lightweight instance.
    */
-  protected abstract BasicSearchScope createSubscope(List<Property> filters, Element newRoot);
+  protected abstract BasicSearchScope createSubscope(List<Property> filters,
+                                                     Element newRoot,
+                                                     PageUpdateListener listener);
 
   @Override
   public Element findElement(String marker, Property... filter)
@@ -115,15 +121,14 @@ public abstract class BasicSearchScope implements Scope
   @Override
   public Scope in(String marker, Property... filter)
   {
-    return createSubscope(filters, findElement(marker, filter));
+    return createSubscope(filters, findElement(marker, filter), listener);
   }
 
   private Scope byBoundary(Function<Element, Property> prop, String marker, Property... filter)
   {
     Element boundary = findElement(marker, filter);
-    return createSubscope(merge(new Property[]{prop.apply(boundary)}), rootElement);
+    return createSubscope(merge(new Property[]{prop.apply(boundary)}), getRootElement(), listener);
   }
-
 
   private List<Property> merge(Property[] a, Property... b)
   {
@@ -132,5 +137,14 @@ public abstract class BasicSearchScope implements Scope
     result.addAll(Arrays.asList(b));
     return result;
   }
+
+  /**
+   * @return root element of DOM subtree this scope operates on
+   */
+  public Element getRootElement()
+  {
+    return rootElement;
+  }
+
 
 }

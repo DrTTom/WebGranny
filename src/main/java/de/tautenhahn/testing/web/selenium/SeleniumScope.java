@@ -3,7 +3,6 @@ package de.tautenhahn.testing.web.selenium;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,6 +20,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import de.tautenhahn.testing.web.BasicSearchScope;
 import de.tautenhahn.testing.web.Element;
+import de.tautenhahn.testing.web.PageUpdateListener;
 import de.tautenhahn.testing.web.With.Property;
 
 
@@ -34,14 +34,14 @@ public class SeleniumScope extends BasicSearchScope
 
   private final WebDriver driver;
 
-  private static final String SCRIPT;
+  private static final String SCRIPT = readResource("FindElement.js");
 
-  static
+  static String readResource(String name)
   {
-    try (InputStream ins = SeleniumScope.class.getResourceAsStream("FindElement.js");
+    try (InputStream ins = SeleniumScope.class.getResourceAsStream(name);
       Scanner sc = new Scanner(ins, StandardCharsets.UTF_8).useDelimiter("\\A"))
     {
-      SCRIPT = sc.next();
+      return sc.next();
     }
     catch (IOException e)
     {
@@ -65,15 +65,14 @@ public class SeleniumScope extends BasicSearchScope
   @Override
   protected Stream<Element> findElements(List<Property> allFilters, int timeout)
   {
-    String rootSel = Optional.ofNullable(rootElement.getAttribute("id"))
+    String rootSel = Optional.ofNullable(getRootElement().getAttribute("id"))
                              .filter(i -> !i.isEmpty())
-                             .map(i -> '#' + i)
+                             .map(i -> "*[id=\"" + i + "\"]")
                              .orElse("body");
     StringBuilder sb = new StringBuilder(SCRIPT).append("return _list_('").append(rootSel).append("', '*')");
     allFilters.forEach(f -> sb.append(".filter(e=>").append(f.getJsFilter()).append(')'));
     sb.append(".map(_desc_)");
     List<Map<String, Object>> list = getList(sb.toString(), System.currentTimeMillis() + timeout);
-    List<Element> result = new ArrayList<>(list.size());
     WebDriverWait wait = timeout > 0 ? new WebDriverWait(driver, 1) : null;
     return list.stream()
                .filter(descr -> descr.get("top") != descr.get("bottom")
@@ -99,8 +98,6 @@ public class SeleniumScope extends BasicSearchScope
 
   private List<Map<String, Object>> getList(String script, long deadline)
   {
-    System.out.println("\n\n" + script);
-
     List<Map<String, Object>> list = (List)((JavascriptExecutor)driver).executeScript(script);
     while (list.isEmpty() && System.currentTimeMillis() < deadline)
     {
@@ -118,9 +115,12 @@ public class SeleniumScope extends BasicSearchScope
   }
 
   @Override
-  protected BasicSearchScope createSubscope(List<Property> filters, Element root)
+  protected SeleniumScope createSubscope(List<Property> filters, Element root, PageUpdateListener listener)
   {
-    return new SeleniumScope(filters, (SeleniumElement)root, driver);
+    SeleniumScope result = new SeleniumScope(filters, (SeleniumElement)root, driver);
+    result.listener = listener;
+    return result;
+
   }
 
   @Override
@@ -136,11 +136,8 @@ public class SeleniumScope extends BasicSearchScope
     return driver.getCurrentUrl();
   }
 
-  /**
-   * @return the Selenium object describing the current root element.
-   */
-  public WebElement getRootWebElement()
+  WebElement getRootWebElement()
   {
-    return ((SeleniumElement)rootElement).elem;
+    return ((SeleniumElement)getRootElement()).elem;
   }
 }

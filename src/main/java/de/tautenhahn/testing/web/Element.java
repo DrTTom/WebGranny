@@ -49,4 +49,9 @@ public interface Element
    */
   String getId();
 
+  /**
+   * Adds a listener to be notified when a page update is expected.
+   */
+  void addListener(PageUpdateListener listener);
+
 }

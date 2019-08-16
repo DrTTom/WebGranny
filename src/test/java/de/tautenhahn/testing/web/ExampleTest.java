@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -14,20 +14,45 @@ import de.tautenhahn.testing.web.selenium.SeleniumWebGranny;
 
 
 /**
- * Some unit tests, should be sorted into other classes later
+ * Examples how web application tests can look like.
  * 
  * @author t.tautenhahn
  */
-public class ExampleTest
+public class ExampleTest extends UpdatingSearchScope
 {
 
-  private WebGranny createGranny() throws IOException
+  private static final String START_PAGE = "http://www.google.de";
+
+  private static final WebGranny granny;
+
+  static
   {
     try (InputStream ins = ExampleTest.class.getResourceAsStream("/config.json"))
     {
       SeleniumConfiguration conf = SeleniumConfiguration.parse(ins);
-      return new SeleniumWebGranny(conf);
+      granny = new SeleniumWebGranny(conf);
     }
+    catch (IOException e)
+    {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  /**
+   * The base class is a search scope, so in the constructor you have to supply a configured web client as
+   * well as a starting page.
+   * 
+   * @throws IOException
+   */
+  public ExampleTest() throws IOException
+  {
+    super(granny, START_PAGE);
+  }
+
+  @AfterAll
+  static void tearDown()
+  {
+    granny.closeAll();
   }
 
   /**
@@ -42,44 +67,15 @@ public class ExampleTest
   @Disabled("this is just an example, do not disturb google with senseless searches")
   public void searchSomething() throws Exception
   {
-    WebGranny granny = createGranny();
-    granny.openUrl("http://www.google.de");
-    Scope page = granny.currentPage();
+    // short for "click your mouse in that field and then on the keyboard ..."
+    findElement("Suche").doType("Computer für Senioren");
+    pressEnter();
 
-    // short for "click your mouse in that field and then on the keyboard ... press Enter."
-    page.findElement("Suche").doType("Computer für Senioren");
-    page.pressEnter();
-    page = granny.getUpdatedPage(page, 1000);
-
-    page.after("Ungefähr .* Ergebnisse .*").findLink(".*Anleitung in Bildern.*").click();
-    page = granny.getUpdatedPage(page, 1000);
+    after("Ungefähr .* Ergebnisse .*").findLink(".*Anleitung in Bildern.*").click();
 
     assertThat(granny.currentUrl()).contains("amazon");
     String found = page.findHeader("Kunden, die diesen Artikel .*").getText();
     assertThat(found).endsWith("kauften auch");
-    granny.closeAll();
   }
 
-  /**
-   * Selects some elements on a local example page. Assert that always the nearest matching element is found.
-   * 
-   * @throws IOException
-   */
-  @Test
-  public void findElements() throws IOException
-  {
-    WebGranny granny = createGranny();
-    Scope page = granny.openUrl("file://"
-      + Paths.get("src", "test", "resources", "testPage.html").toAbsolutePath());
-
-    assertThat(page.findHeader("Example.*").getText()).isEqualTo("Example page");
-
-    page.findElement("Enter some text .*", With.tagName("INPUT")).doType("hello!");
-    assertThat(page.findElement("FINDME.*").getText()).isEqualTo("FINDME#1");
-    assertThat(page.in("A special container.*").findElement("FINDME.*").getText()).isEqualTo("FINDME#3");
-
-    // should revert search preference to last matching:
-    // assertThat(page.before("A special container").findElement("FINDME.*").getText()).isEqualTo("FINDME#2");
-    granny.closeAll();
-  }
 }

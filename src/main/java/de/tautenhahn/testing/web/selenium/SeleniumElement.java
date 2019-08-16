@@ -1,11 +1,14 @@
 package de.tautenhahn.testing.web.selenium;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.openqa.selenium.WebElement;
 
 import de.tautenhahn.testing.web.BoundingRectangle;
 import de.tautenhahn.testing.web.Element;
+import de.tautenhahn.testing.web.PageUpdateListener;
 
 
 /**
@@ -22,6 +25,7 @@ public class SeleniumElement implements Element
 
   private final BoundingRectangle position;
 
+  private final List<PageUpdateListener> listeners = new ArrayList<>();
 
   SeleniumElement(WebElement elem, Map<String, Object> descr)
   {
@@ -37,6 +41,7 @@ public class SeleniumElement implements Element
   public void click()
   {
     elem.click();
+    listeners.forEach(PageUpdateListener::pagePossiblyUpdated);
   }
 
   @Override
@@ -73,6 +78,12 @@ public class SeleniumElement implements Element
   public String getId()
   {
     return id;
+  }
+
+  @Override
+  public void addListener(PageUpdateListener listener)
+  {
+    listeners.add(listener);
   }
 
 }
