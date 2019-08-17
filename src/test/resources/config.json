@@ -1,10 +1,15 @@
 {
    "hubUrl": "none",
-   "currentBrowser": "FirefoxLocal",
+   "currentBrowser": "FirefoxHeadless",
    "browsers": {
       "FirefoxLocal": {
          "driverPath": "/usr/local/bin/geckodriver",
          "driverProp": "webdriver.gecko.driver"
+      },
+      "FirefoxHeadless": {
+         "driverPath": "/usr/local/bin/geckodriver",
+         "driverProp": "webdriver.gecko.driver",
+         "args": "--headless"
       }
    }
 }

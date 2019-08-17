@@ -118,5 +118,12 @@ public final class With
     {
       return jsFilter;
     }
+
+
+    @Override
+    public String toString()
+    {
+      return jsFilter;
+    }
   }
 }

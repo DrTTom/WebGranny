@@ -9,6 +9,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import de.tautenhahn.testing.web.WebGranny.Check;
 import de.tautenhahn.testing.web.selenium.SeleniumConfiguration;
 import de.tautenhahn.testing.web.selenium.SeleniumWebGranny;
 
@@ -18,19 +19,24 @@ import de.tautenhahn.testing.web.selenium.SeleniumWebGranny;
  * 
  * @author t.tautenhahn
  */
+@Disabled("this is just an example, do not disturb google with senseless searches")
 public class ExampleTest extends UpdatingSearchScope
 {
 
   private static final String START_PAGE = "http://www.google.de";
 
-  private static final WebGranny granny;
+  private static final WebGranny GRANNY;
 
+  // first some ugly technical stuff - it is over after this block
   static
   {
     try (InputStream ins = ExampleTest.class.getResourceAsStream("/config.json"))
     {
       SeleniumConfiguration conf = SeleniumConfiguration.parse(ins);
-      granny = new SeleniumWebGranny(conf);
+      GRANNY = new SeleniumWebGranny(conf);
+      // Must de-activate most of the implicit page checks because most sides in the WWW are not correct HTML.
+      // In other words, two of the biggest players in the web fail the tests.
+      GRANNY.setGenericPageChecks(Check.ILLEGAL_FOR);
     }
     catch (IOException e)
     {
@@ -46,13 +52,16 @@ public class ExampleTest extends UpdatingSearchScope
    */
   public ExampleTest() throws IOException
   {
-    super(granny, START_PAGE);
+    super(GRANNY, START_PAGE);
   }
 
+  /**
+   * Close all windows after the test is done.
+   */
   @AfterAll
   static void tearDown()
   {
-    granny.closeAll();
+    GRANNY.closeAll();
   }
 
   /**
@@ -64,16 +73,15 @@ public class ExampleTest extends UpdatingSearchScope
    * @throws InterruptedException
    */
   @Test
-  @Disabled("this is just an example, do not disturb google with senseless searches")
   public void searchSomething() throws Exception
   {
     // short for "click your mouse in that field and then on the keyboard ..."
     findElement("Suche").doType("Computer für Senioren");
-    pressEnter();
+    pressEnter(); // waiting for the page to reload is handled implicitly
 
     after("Ungefähr .* Ergebnisse .*").findLink(".*Anleitung in Bildern.*").click();
 
-    assertThat(granny.currentUrl()).contains("amazon");
+    assertThat(GRANNY.currentUrl()).contains("amazon");
     String found = page.findHeader("Kunden, die diesen Artikel .*").getText();
     assertThat(found).endsWith("kauften auch");
   }

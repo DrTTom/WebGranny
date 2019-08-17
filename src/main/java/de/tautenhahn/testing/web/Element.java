@@ -15,7 +15,7 @@ public interface Element
   void click();
 
   /**
-   * @param name
+   * @param name attribute name
    * @return the value of the specified attribute of the element
    */
   String getAttribute(String name);
@@ -24,7 +24,7 @@ public interface Element
    * Gain focus and type text. Method is in this interface because keyboard exists independently of element
    * type.
    * 
-   * @param content
+   * @param content text to type in. Note that special chars as ENTER and TAB require separate methods.
    */
   void doType(String content);
 
@@ -50,7 +50,9 @@ public interface Element
   String getId();
 
   /**
-   * Adds a listener to be notified when a page update is expected.
+   * Adds a listener.
+   * 
+   * @param listener to be notified when a page update is expected
    */
   void addListener(PageUpdateListener listener);
 

@@ -34,6 +34,12 @@ public class UpdatingSearchScope extends BasicSearchScope implements PageUpdateL
     this.client = client;
   }
 
+  /**
+   * Alternative constructor.
+   * 
+   * @param client     web driver
+   * @param initialUrl URL of the initial page
+   */
   public UpdatingSearchScope(WebGranny client, String initialUrl)
   {
     this((BasicSearchScope)client.openUrl(initialUrl), client);

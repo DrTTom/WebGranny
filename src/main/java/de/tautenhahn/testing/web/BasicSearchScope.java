@@ -27,8 +27,8 @@ public abstract class BasicSearchScope implements Scope
   /**
    * Creates immutable instance. Instance will become stale after page reload.
    * 
-   * @param filters
-   * @param rootElement
+   * @param filters     define the scope, like specifying "after some element"
+   * @param rootElement specifies that the scope addresses only elements in the given one
    */
   protected BasicSearchScope(List<Property> filters, Element rootElement)
   {
@@ -72,7 +72,8 @@ public abstract class BasicSearchScope implements Scope
   /**
    * Return first element matching all filters.
    * 
-   * @param allFilters
+   * @param allFilters all filters including the pre-set ones of the scope
+   * @param timeout    number of milliseconds to wait for at least one matching element to appear
    * @return null if no such element
    */
   protected abstract Stream<Element> findElements(List<Property> allFilters, int timeout);
@@ -80,8 +81,9 @@ public abstract class BasicSearchScope implements Scope
   /**
    * Similar to clone(), but may return value of other class.
    * 
-   * @param filters
-   * @param newRoot
+   * @param filters  existing filters which define the scope
+   * @param newRoot  root element of the scope
+   * @param listener should be notified when page reload is expected
    * @return lightweight instance.
    */
   protected abstract BasicSearchScope createSubscope(List<Property> filters,

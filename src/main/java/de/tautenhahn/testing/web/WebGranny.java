@@ -42,4 +42,25 @@ public interface WebGranny
    */
   void closeAll();
 
+  /**
+   * Activates page checks with each loaded page.
+   * 
+   * @param checks
+   */
+  void setGenericPageChecks(Check... checks);
+
+  /**
+   * Generic page checks which can be activated.
+   */
+  enum Check
+  {
+    /** ID attribute of each page element must be unique */
+    DUPLICATE_ID,
+    /** for attributes i labels must match an existing id */
+    ILLEGAL_FOR,
+    /** HTML pages must specify a content type (and encoding) */
+    MISSING_CONTENT_TYPE,
+    /** IMG tags must specify an 'alt' attribute */
+    MISSING_ALT_ATTRIBUTE;
+  }
 }

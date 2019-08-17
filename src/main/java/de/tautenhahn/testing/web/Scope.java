@@ -1,8 +1,8 @@
 package de.tautenhahn.testing.web;
 
-import de.tautenhahn.testing.web.With.Property;
-
 import java.util.List;
+
+import de.tautenhahn.testing.web.With.Property;
 
 
 /**
@@ -52,7 +52,7 @@ public interface Scope
    * Short for find and click
    *
    * @param marker see {@link #findElement(String, Property...)}
-   * @return see {@link #findElement(String, Property...)}
+   * @param filter see {@link #findElement(String, Property...)}
    */
   default void clickOn(String marker, Property... filter)
   {
@@ -92,9 +92,9 @@ public interface Scope
   /**
    * Returns subscope ...
    *
-   * @param string
-   * @param filter
-   * @return
+   * @param string any text user can recognize element by
+   * @param filter additional properties specifying root element of new scope
+   * @return new sub scope
    */
   Scope in(String string, Property... filter);
 

@@ -29,7 +29,7 @@ public class SeleniumConfiguration
    * 
    * @param ins contains configuration data as JSON
    * @return parsed configuration
-   * @throws IOException
+   * @throws IOException in case of streaming problems
    */
   public static SeleniumConfiguration parse(InputStream ins) throws IOException
   {
@@ -74,14 +74,13 @@ public class SeleniumConfiguration
 
     private String platform;
 
-    boolean installProperty()
+    String installProperty()
     {
-      if (driverProp == null)
+      if (driverProp != null)
       {
-        return false;
+        System.setProperty(driverProp, driverPath);
       }
-      System.setProperty(driverProp, driverPath);
-      return true;
+      return driverProp;
     }
 
     String getType()

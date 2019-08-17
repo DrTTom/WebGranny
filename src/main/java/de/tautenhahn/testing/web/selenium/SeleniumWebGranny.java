@@ -4,18 +4,27 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import de.tautenhahn.testing.web.DuplicateIdException;
+import de.tautenhahn.testing.web.IllegalIdRefException;
+import de.tautenhahn.testing.web.MissingAltAttributeException;
+import de.tautenhahn.testing.web.MissingContentTypeException;
 import de.tautenhahn.testing.web.Scope;
 import de.tautenhahn.testing.web.WebGranny;
+import de.tautenhahn.testing.web.selenium.SeleniumConfiguration.Browser;
 
 
 /**
@@ -30,10 +39,14 @@ public class SeleniumWebGranny implements WebGranny
 
   private final WebDriver driver;
 
+  private Set<Check> activePageChecks = Set.of(Check.values());
+
   /**
    * used to adjust all the waits according to system speed.
    */
   public static final long WAIT_FACTOR = 100;
+
+
 
   /**
    * Creates instance.
@@ -42,8 +55,32 @@ public class SeleniumWebGranny implements WebGranny
    */
   public SeleniumWebGranny(SeleniumConfiguration config)
   {
-    config.getBrowsers().get(config.getCurrentBrowser()).installProperty();
-    driver = new FirefoxDriver();
+    Browser browserConf = config.getBrowsers().get(config.getCurrentBrowser());
+    String prop = browserConf.installProperty();
+    driver = createDriver(browserConf, prop);
+  }
+
+  private WebDriver createDriver(Browser browserConf, String prop)
+  {
+    if (prop == null)
+    {
+      throw new UnsupportedOperationException("TODO: implement remote driver usage");
+    }
+    switch (prop)
+    {
+      case "webdriver.gecko.driver":
+        FirefoxOptions options = new FirefoxOptions();
+        Optional.ofNullable(browserConf.getArgs()).ifPresent(a -> options.addArguments(a.split(" ")));
+        return new FirefoxDriver(options);
+      case "webdriver.chrome.driver":
+        ChromeOptions copt = new ChromeOptions();
+        Optional.ofNullable(browserConf.getArgs()).ifPresent(a -> copt.addArguments(a.split(" ")));
+        return new ChromeDriver(copt);
+      case "webdriver.edge.driver":
+        throw new UnsupportedOperationException("TODO: implement me");
+      default:
+        throw new IllegalStateException("unimplemented case " + prop);
+    }
   }
 
   @Override
@@ -69,24 +106,49 @@ public class SeleniumWebGranny implements WebGranny
                              new SeleniumElement(driver.findElement(By.tagName("body")), coversAll), driver);
   }
 
-  // TODO: make checks configurable, throw Exception for failing test
   private void performPageChecks()
   {
+    if (activePageChecks.isEmpty())
+    {
+      return;
+    }
     Map<String, Object> result = (Map<String, Object>)((JavascriptExecutor)driver).executeScript(SCRIPT);
     List<String> ids = (List<String>)result.get("ids");
-    Set<String> set = new HashSet<>();
-    ids.stream().filter(id -> !set.add(id)).forEach(id -> System.out.println("duplicate id " + id));
-    List<Map<String, String>> labels = (List<Map<String, String>>)result.get("labels");
-    labels.stream()
-          .filter(l -> !ids.contains(l.get("for")))
-          .forEach(l -> System.out.println("label '" + l.get("label") + "' has illegal for attribute "
-            + l.get("for")));
-    if (!((boolean)result.get("contentType")))
+    for ( Check check : activePageChecks )
     {
-      System.out.println("missing content type declaration");
+      switch (check)
+      {
+        case DUPLICATE_ID:
+          Set<String> set = new HashSet<>();
+          ids.stream().filter(id -> !set.add(id)).forEach(id -> {
+            throw new DuplicateIdException(currentUrl(), id,
+                                           driver.findElement(By.tagName("body")).getText());
+          });
+          break;
+        case ILLEGAL_FOR:
+          List<Map<String, String>> labels = (List<Map<String, String>>)result.get("labels");
+          labels.stream().filter(l -> !ids.contains(l.get("for"))).forEach(l -> {
+            throw new IllegalIdRefException(currentUrl(), l.get("label"), l.get("for"),
+                                            driver.findElement(By.tagName("body")).getText());
+          });
+          break;
+        case MISSING_CONTENT_TYPE:
+          if (!((boolean)result.get("contentType")))
+          {
+            throw new MissingContentTypeException(currentUrl(),
+                                                  driver.findElement(By.tagName("body")).getText());
+          }
+          break;
+        case MISSING_ALT_ATTRIBUTE:
+          ((List<String>)result.get("wrongImgs")).forEach(i -> {
+            throw new MissingAltAttributeException(currentUrl(), i,
+                                                   driver.findElement(By.tagName("body")).getText());
+          });
+          break;
+        default:
+          throw new UnsupportedOperationException("unimplemented check " + check);
+      }
     }
-    ((List<String>)result.get("wrongImgs")).forEach(i -> System.out.println("missing alt attribute for image "
-      + i));
   }
 
   @Override
@@ -109,5 +171,11 @@ public class SeleniumWebGranny implements WebGranny
       return oldPage;
     }
     throw new IllegalArgumentException();
+  }
+
+  @Override
+  public void setGenericPageChecks(Check... checks)
+  {
+    activePageChecks = Set.of(checks);
   }
 }

@@ -86,4 +86,9 @@ public class SeleniumElement implements Element
     listeners.add(listener);
   }
 
+  @Override
+  public String toString()
+  {
+    return elem.toString();
+  }
 }

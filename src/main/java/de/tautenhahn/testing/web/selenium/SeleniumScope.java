@@ -65,7 +65,7 @@ public class SeleniumScope extends BasicSearchScope
   @Override
   protected Stream<Element> findElements(List<Property> allFilters, int timeout)
   {
-    String rootSel = Optional.ofNullable(getRootElement().getAttribute("id"))
+    String rootSel = Optional.ofNullable(getRootElement().getId())
                              .filter(i -> !i.isEmpty())
                              .map(i -> "*[id=\"" + i + "\"]")
                              .orElse("body");

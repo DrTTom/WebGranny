@@ -10,7 +10,7 @@ import de.tautenhahn.testing.web.With.Property;
  * 
  * @author t.tautenhahn
  */
-public class ElementNotFoundException extends RuntimeException
+public class ElementNotFoundException extends OnWebsiteException
 {
 
   private static final long serialVersionUID = 1L;
@@ -25,14 +25,9 @@ public class ElementNotFoundException extends RuntimeException
    */
   public ElementNotFoundException(String url, Element rootElement, List<Property> all, String text)
   {
-    super(createMessage(url, rootElement, all, text));
+    super(url, msg -> {
+      msg.append("\nwithin element ").append(rootElement);
+      all.forEach(p -> msg.append("\n    ").append(p.getJsFilter()));
+    }, text);
   }
-
-  private static String createMessage(String url, Element rootElement, List<Property> all, String text)
-  {
-    return url + rootElement + all + text; // TODO
-  }
-
-
-
 }
