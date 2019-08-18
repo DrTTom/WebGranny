@@ -98,9 +98,14 @@ public class SeleniumScope extends BasicSearchScope
 
   private List<Map<String, Object>> getList(String script, long deadline)
   {
-    List<Map<String, Object>> list = (List)((JavascriptExecutor)driver).executeScript(script);
-    while (list.isEmpty() && System.currentTimeMillis() < deadline)
+    while (true)
     {
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> list = (List<Map<String, Object>>)((JavascriptExecutor)driver).executeScript(script);
+      if (!list.isEmpty() || System.currentTimeMillis() > deadline)
+      {
+        return list;
+      }
       try
       {
         Thread.sleep(500);
@@ -109,9 +114,7 @@ public class SeleniumScope extends BasicSearchScope
       {
         Thread.currentThread().interrupt();
       }
-      list = (List)((JavascriptExecutor)driver).executeScript(script);
     }
-    return list;
   }
 
   @Override

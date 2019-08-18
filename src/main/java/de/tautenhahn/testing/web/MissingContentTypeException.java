@@ -18,7 +18,7 @@ public class MissingContentTypeException extends OnWebsiteException
    */
   public MissingContentTypeException(String url, String text)
   {
-    super(url, msg -> {
+    super(url, msg -> { // no further details
     }, text);
   }
 }

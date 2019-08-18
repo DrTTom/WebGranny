@@ -44,6 +44,7 @@ public interface Scope
    * Several convenience methods allow selecting elements of specified abstract type.
    *
    * @param marker see {@link #findElement(String, Property...)}
+   * @param filter any additional filters to recognize the single element by
    * @return see {@link #findElement(String, Property...)}
    */
   Element findLink(String marker, Property... filter);

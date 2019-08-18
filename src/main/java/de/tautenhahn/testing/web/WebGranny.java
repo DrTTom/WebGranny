@@ -43,9 +43,11 @@ public interface WebGranny
   void closeAll();
 
   /**
-   * Activates page checks with each loaded page.
+   * Activates page checks with each loaded page. Default is all implemented checks which should be very fast.
+   * However, when accessing some page outside your own responsibility, you may be forced to switch off some
+   * checks.
    * 
-   * @param checks
+   * @param checks values of all checks to activate.
    */
   void setGenericPageChecks(Check... checks);
 

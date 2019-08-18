@@ -17,7 +17,7 @@ public final class With
   }
 
   /**
-   * @param name
+   * @param name tag name in capital letters or regular expression
    * @return filters elements of given tag name.
    */
   public static Property tagName(String name)
@@ -103,7 +103,7 @@ public final class With
     }
 
     /**
-     * @param e
+     * @param e element to check
      * @return true if given element has this property.
      */
     public boolean matchesElement(Element e)

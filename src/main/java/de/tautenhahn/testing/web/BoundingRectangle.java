@@ -19,10 +19,10 @@ public class BoundingRectangle
   /**
    * Creates immutable instance.
    * 
-   * @param top
-   * @param bottom
-   * @param left
-   * @param right
+   * @param top    coordinate of upper border
+   * @param bottom coordinate of lower border
+   * @param left   coordinate of left border
+   * @param right  guess
    */
   public BoundingRectangle(int top, int bottom, int left, int right)
   {
