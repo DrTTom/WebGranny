@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>test page</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+</head>
+<body>
+   <h1>Another example page</h1>
+   <form>
+      <label for="name">First Name: <input id="name" name="name"> </label> </br>
+      <label for="male">male</label> <input type="radio" id="male" name="sex" value="0"> </br> 
+      <label for="female">female</label> <input type="radio" id="female" name="sex" value="1"> </br>
+      <label for="age">age</label>
+       <select id="age" size="1"> <option>young</option> <option>old</option> <option>very old</option></select>
+       </br> 
+      <input type="button" value="submit" onClick="alert('This is only an example'); window.location.href='testPage.html'"> 
+   </form>
+</body>
+<script>
+setTimeout(() => { document.querySelector('body').innerHTML += '<label>delayed element</label>' }, 500);
+</script>
+</html>
