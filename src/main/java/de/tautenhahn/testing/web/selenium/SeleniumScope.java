@@ -38,10 +38,10 @@ public class SeleniumScope extends BasicSearchScope
 
   static String readResource(String name)
   {
-    try (InputStream ins = SeleniumScope.class.getResourceAsStream(name);
-      Scanner sc = new Scanner(ins, StandardCharsets.UTF_8).useDelimiter("\\A"))
+    try (InputStream insRes = SeleniumScope.class.getResourceAsStream(name);
+      Scanner scRes = new Scanner(insRes, StandardCharsets.UTF_8).useDelimiter("\\A"))
     {
-      return sc.next();
+      return scRes.next();
     }
     catch (IOException e)
     {
