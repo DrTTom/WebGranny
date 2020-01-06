@@ -74,6 +74,13 @@ public class UpdatingSearchScope extends BasicSearchScope implements PageUpdateL
   }
 
   @Override
+  public boolean handleAlert(String message, String input, boolean doAccept)
+  {
+    client.handleAlert(message, input, doAccept);
+    return true;
+  }
+
+  @Override
   public void pagePossiblyUpdated()
   {
     page = (BasicSearchScope)client.getUpdatedPage(page, 1);

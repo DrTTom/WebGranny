@@ -7,8 +7,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -177,5 +179,52 @@ public class SeleniumWebGranny implements WebGranny
   public void setGenericPageChecks(Check... checks)
   {
     activePageChecks = Set.of(checks);
+  }
+
+  @Override
+  public void handleAlert(String message, String input, boolean doAccept)
+  {
+    Alert alert = getAlert(2000);
+    if (!alert.getText().equals(message) && !alert.getText().matches(message))
+    {
+      throw new IllegalStateException(
+          "wrong alert text: expected\n" + message + "\nbut was\n" + alert.getText());
+    }
+    Optional.ofNullable(input).ifPresent(alert::sendKeys);
+    if (doAccept)
+    {
+      alert.accept();
+    } else
+    {
+      alert.dismiss();
+    }
+  }
+
+  // Simplify if Selenium ever supports a method to wait for an alert.
+  private Alert getAlert(int timeout)
+  {
+    long deadline = System.currentTimeMillis() + timeout;
+    while (true)
+    {
+      try
+      {
+        return driver.switchTo().alert();
+      } catch (NoAlertPresentException e)
+      {
+        if (System.currentTimeMillis() < deadline)
+        {
+          try
+          {
+            Thread.sleep(400);
+          } catch (InterruptedException ex)
+          {
+            Thread.currentThread().interrupt();
+          }
+        } else
+        {
+          throw e;
+        }
+      }
+    }
   }
 }

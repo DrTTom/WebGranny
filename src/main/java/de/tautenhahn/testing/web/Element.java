@@ -15,6 +15,14 @@ public interface Element
   void click();
 
   /**
+   * Same as {@link #click()} but additionally handles alert.
+   * @param message expected message in that alert, regex supported
+   * @param input text to enter, optional. Fail test if given but alert has no input field.
+   * @param accept true to click accept, false to cancel.
+   */
+  void clickAndHandleAlert(String message, String input, boolean accept);
+
+  /**
    * @param name attribute name
    * @return the value of the specified attribute of the element
    */

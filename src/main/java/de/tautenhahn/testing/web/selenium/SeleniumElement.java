@@ -45,6 +45,17 @@ public class SeleniumElement implements Element
   }
 
   @Override
+  public void clickAndHandleAlert(String message, String input, boolean accept)
+  {
+    elem.click();
+    if (listeners.stream().noneMatch(l-> l.handleAlert(message, input, accept)))
+    {
+      throw new IllegalStateException("No listener to handle alert");
+    }
+    listeners.forEach(PageUpdateListener::pagePossiblyUpdated);
+  }
+
+  @Override
   public String getAttribute(String name)
   {
     return elem.getAttribute(name);

@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
   id 'java-library'
-  id 'com.github.spotbugs' version '2.0.1'
+  id 'com.github.spotbugs' version '3.0.0'
   id 'com.github.ben-manes.versions' version '0.27.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules  
   id 'pmd'
@@ -14,7 +14,7 @@ plugins {
 }
 
 pmd {
-    toolVersion = '6.10.0'
+    toolVersion = '6.20.0'
     ruleSets = []
     ruleSetFiles = files("pmd_config.xml")
 }
@@ -35,7 +35,7 @@ group = 'de.tautenhahn.testing'
 check.dependsOn jacocoTestReport
 
 dependencies {
-   implementation 'org.slf4j:slf4j-api:1.8.0-beta4'
+   implementation 'org.slf4j:slf4j-api:2.0.0-alpha1'
    implementation "com.google.code.gson:gson:2.8.6"
    api 'org.seleniumhq.selenium:selenium-java:3.141.59'
 
