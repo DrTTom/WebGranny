@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<ruleset name="Default lza rules" xmlns="http://pmd.sf.net/ruleset/2.0.0"
+<ruleset name="Some hopefully sensible rules" xmlns="http://pmd.sf.net/ruleset/2.0.0"
 >
    <description>
-      Shall become bos default rule set.
+     Includes all rules except those where an exclude reason can be named.
    </description>
 
    <rule ref="category/java/bestpractices.xml">
