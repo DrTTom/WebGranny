@@ -6,7 +6,7 @@ buildscript {
 
 plugins {
   id 'java-library'
-  id 'com.github.spotbugs' version '4.0.8'
+  id 'com.github.spotbugs' version '4.2.4'
   id 'com.github.ben-manes.versions' version '0.28.0'
   // id 'net.ltgt.errorprone' version '0.0.13'  //lots of false positives, contradicts PMD rules  
   id 'pmd'
@@ -14,12 +14,13 @@ plugins {
 }
 
 pmd {
-    toolVersion = '6.20.0'
+    toolVersion = '6.24.0'
     ruleSets = []
     ruleSetFiles = files("pmd_config.xml")
 }
 
 spotbugs {
+   toolVersion ='4.0.3'
    effort = "max"
    reportLevel = "low"
    excludeFilter = file("findbugs-exclude.xml")
@@ -37,11 +38,11 @@ check.dependsOn jacocoTestReport
 dependencies {
    implementation 'org.slf4j:slf4j-api:2.0.0-alpha1'
    implementation "com.google.code.gson:gson:2.8.6"
-   api 'org.seleniumhq.selenium:selenium-java:3.141.59'
+   api 'org.seleniumhq.selenium:selenium-java:4.0.0-alpha-5'
 
-   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0-M1'
    testImplementation 'org.assertj:assertj-core:3.16.1'
-   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2' 
+   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0-M1' 
 }
 
 test{
